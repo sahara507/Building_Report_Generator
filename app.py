@@ -21,14 +21,14 @@ def home():
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):           # he function user kadun input ghenyasathi aahe. to upload the file..
-                                                          # Make sure data folder exists
-    os.makedirs("data", exist_ok=True)
+                                                         
+    os.makedirs("data", exist_ok=True)                     # Make sure data folder exists
 
-                                                             # Create file path
-    file_path = f"data/{file.filename}"
+                                                            
+    file_path = f"data/{file.filename}"                     # Create file path
 
-                                                             # Save uploaded file
-    with open(file_path, "wb") as buffer:
+                                                             
+    with open(file_path, "wb") as buffer:                  # Save uploaded file
         buffer.write(await file.read())
 
                                                             # Read the file using ingestion.py
