@@ -1,6 +1,3 @@
-import pandas as pd
-
-
 # Business report generate karanyasathi function ahe.
 def generate_report(df):
 
@@ -40,5 +37,5 @@ def generate_report(df):
     }
 
 
-    # तयार झालेला report परत करतो.
+    #tayar zalela report parat karato.
     return report
