@@ -2,6 +2,7 @@
 from fastapi import FastAPI, UploadFile, File
 from ingestion import load_file
 from report_generator import generate_report
+from web_search import search_web
 import os
 
 app = FastAPI(
@@ -40,4 +41,15 @@ async def upload(file: UploadFile = File(...)):           # he function user kad
         "filename": file.filename,
         "message": "File uploaded succesfully...",
          "report": report
+    }
+
+@app.get("/web-search")                                     # for Web Search API
+def web_search(query: str):
+
+    # Call Tavily search function
+    results = search_web(query)
+
+    return {
+        "query": query,
+        "results": results
     }
