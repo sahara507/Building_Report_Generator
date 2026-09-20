@@ -19,6 +19,7 @@ langchain-huggingface
 langchain-groq
 langchain-openai
 langchain-text-splitters
+langchain-tavily
 
 groq
 chromadb
