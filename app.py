@@ -5,11 +5,16 @@ from report_generator import generate_report
 from web_search import search_web
 import os
 
+
 app = FastAPI(
-    title="_BUILDING_REPORT_GENERATOR_",    
+    title="_BUILDING_REPORT_GENERATOR_",
     description="Generates the reports using Gen_AI",
-    
 )
+
+
+# Create uploads folder if it doesn't exist
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @app.get("/")
@@ -17,33 +22,33 @@ def home():
     return {
         "message": "Automated Report Generator is running"
     }
-    
 
 
 @app.post("/upload")
-async def upload(file: UploadFile = File(...)):           # he function user kadun input ghenyasathi aahe. to upload the file..
-                                                         
-    os.makedirs("data", exist_ok=True)                     # Make sure data folder exists
+async def upload(file: UploadFile = File(...)):
 
-                                                            
-    file_path = f"data/{file.filename}"                     # Create file path
+    # Create file path
+    file_path = os.path.join(
+        UPLOAD_FOLDER,
+        file.filename
+    )
 
-                                                             
-    with open(file_path, "wb") as buffer:                  # Save uploaded file
-        buffer.write(await file.read())
+    # Save uploaded file
+    with open(file_path, "wb") as buffer:
+        content = await file.read()
+        buffer.write(content)
 
-                                                            # Read the file using ingestion.py
-    df = load_file(file_path)
+    # Load uploaded CSV/Excel file
+    data = load_file(file_path)
 
-                                                           # Generate report using report_generator.py
-    report = generate_report(df)  
     return {
         "filename": file.filename,
-        "message": "File uploaded succesfully...",
-         "report": report
+        "message": "File uploaded successfully",
+        "data": data.to_dict(orient="records")
     }
 
-@app.get("/web-search")                                     # for Web Search API
+
+@app.get("/web-search")
 def web_search(query: str):
 
     # Call Tavily search function
