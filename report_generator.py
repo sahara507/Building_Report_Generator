@@ -6,7 +6,7 @@ def generate_report(df):
     # Available columns chi list tayar karato.
     columns = df.columns.tolist()
 
-      if "Revenue" in df.columns:
+    if "Revenue" in df.columns:
 
         #calculate Total Revenue.
         total_revenue = df["Revenue"].sum()

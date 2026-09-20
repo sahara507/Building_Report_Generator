@@ -38,6 +38,6 @@ async def upload(file: UploadFile = File(...)):           # he function user kad
     report = generate_report(df)  
     return {
         "filename": file.filename,
-        "message": "File uploaded succesfully..."
+        "message": "File uploaded succesfully...",
          "report": report
     }
