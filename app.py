@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
+from pydantic import BaseModel          
 
 from ingestion import load_file
 from report_generator import generate_report, generate_report_from_pdf
@@ -42,7 +43,8 @@ app = FastAPI(
     title="_BUILDING_REPORT_GENERATOR_",
     description="Generates the reports using Gen_AI",
 )
-
+class SearchRequest(BaseModel):
+        query: str
 
 # --------------------------------------------------
 # FOLDERS
@@ -654,11 +656,11 @@ def download_html(filename: str):
 # --------------------------------------------------
 
 @app.get("/web-search")
-def web_search(query: str):
+def web_search(data:SearchRequest):
 
-    results = search_web(query)
+    results = search_web(data.query)
 
     return {
-        "query": query,
+        "query": data.query,
         "results": results
     }
