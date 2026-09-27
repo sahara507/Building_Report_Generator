@@ -3,3 +3,21 @@ __pycache__/
 *.pyc
 venv/
 .venv/
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Generated reports
+Reports/
+
+# Uploaded files
+uploads/
+
+# Local database
+report.db
