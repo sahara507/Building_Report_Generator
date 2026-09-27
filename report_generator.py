@@ -182,7 +182,7 @@ Prepare the following sections:
 12. Limitations
 13. Conclusion
 """
-
+     
     max_retries = 3
 
     for attempt in range(max_retries):
@@ -209,6 +209,75 @@ Prepare the following sections:
         "generated_report": response.text
     }
 
+def generate_report_from_pdf(pdf_text):
+    """
+    Generate an AI report from extracted PDF text.
+    """
+
+    prompt = f"""
+You are a professional report analyst.
+
+Analyze the following PDF content and create a detailed,
+well-structured report.
+
+PDF CONTENT:
+{pdf_text}
+
+Instructions:
+
+1. Use only information available in the PDF.
+2. Do not invent numbers, facts, statistics, or conclusions.
+3. Clearly explain important information from the PDF.
+4. Organize the report into logical sections.
+5. Include an Executive Summary.
+6. Include Introduction.
+7. Include Objectives if they can be identified.
+8. Include detailed findings.
+9. Include important observations.
+10. Include limitations if applicable.
+11. Include a Conclusion.
+12. If some information is not available in the PDF, clearly state that.
+13. Do not present assumptions as facts.
+"""
+
+    max_retries = 5
+
+    for attempt in range(max_retries):
+
+        try:
+
+            print(
+                f"Generating PDF report... "
+                f"Attempt {attempt + 1}/{max_retries}"
+            )
+
+            response = client.models.generate_content(
+                model="gemini-flash-latest",
+                contents=prompt
+            )
+
+            return {
+                "generated_report": response.text
+            }
+
+        except Exception as e:
+
+            error_message = str(e)
+
+            if "503" in error_message and attempt < max_retries - 1:
+
+                wait_time = 2 ** attempt
+
+                print(
+                    f"Gemini is temporarily unavailable. "
+                    f"Retrying in {wait_time} seconds..."
+                )
+
+                time.sleep(wait_time)
+
+            else:
+                raise
+            
 # ---------------------------------
 # TEST THE REPORT GENERATOR
 # ---------------------------------
