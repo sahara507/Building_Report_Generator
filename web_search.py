@@ -10,9 +10,9 @@ load_dotenv()
 
 # Web search karanyasathi Tavily tool varato.
 web_search = TavilySearch(
-    max_results=20,
+    max_results=5,
     search_depth="advanced",
-    include_raw_content=True
+    include_raw_content=False
 )
 
 

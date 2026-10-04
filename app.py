@@ -1,9 +1,13 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
-from pydantic import BaseModel          
+from pydantic import BaseModel
 
 from ingestion import load_file
-from report_generator import generate_report, generate_report_from_pdf
+from report_generator import (
+    generate_report,
+    generate_report_from_pdf,
+    generate_topic_report
+)
 from web_search import search_web
 
 from database import (
@@ -43,8 +47,33 @@ app = FastAPI(
     title="_BUILDING_REPORT_GENERATOR_",
     description="Generates the reports using Gen_AI",
 )
+
+
+# --------------------------------------------------
+# NEW: REQUEST MODEL FOR TAVILY WEB SEARCH
+# --------------------------------------------------
+# This class accepts the search query from Postman.
+# Example:
+# {
+#     "query": "COVID-19"
+# }
+
 class SearchRequest(BaseModel):
-        query: str
+    query: str
+
+
+# --------------------------------------------------
+# NEW: REQUEST MODEL FOR TOPIC REPORT
+# --------------------------------------------------
+# This class accepts the topic/report prompt from Postman.
+# Example:
+# {
+#     "prompt": "Generate a detailed report on COVID-19"
+# }
+
+class TopicRequest(BaseModel):
+    prompt: str
+
 
 # --------------------------------------------------
 # FOLDERS
@@ -443,9 +472,9 @@ def create_pdf_report(report_text, filename):
                 )
             )
 
-    # ------------------------------------------------
+    # --------------------------------------------------
     # HEADER + FOOTER
-    # ------------------------------------------------
+    # --------------------------------------------------
 
     def add_page_number(canvas, doc):
 
@@ -656,11 +685,33 @@ def download_html(filename: str):
 # --------------------------------------------------
 
 @app.get("/web-search")
-def web_search(data:SearchRequest):
+def web_search(data: SearchRequest):
 
     results = search_web(data.query)
 
     return {
         "query": data.query,
         "results": results
+    }
+
+
+# --------------------------------------------------
+# TOPIC REPORT
+# --------------------------------------------------
+# This endpoint is different from /web-search.
+# /web-search only returns Tavily search results.
+# /generate-topic-report uses the search results
+# and Groq to create a proper readable report.
+# --------------------------------------------------
+
+@app.post("/generate-topic-report")
+def generate_topic_report_api(request: TopicRequest):
+
+    # Send the user's topic/prompt to report_generator.py
+    report = generate_topic_report(request.prompt)
+
+    # Return only the generated report instead of
+    # returning the complete Tavily search JSON.
+    return {
+        "report": report["generated_report"]
     }
